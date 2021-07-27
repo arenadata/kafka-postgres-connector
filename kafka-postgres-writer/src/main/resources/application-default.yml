@@ -1,0 +1,50 @@
+logging:
+  level:
+    io.arenadata.kafka: ${LOG_LEVEL:DEBUG}
+    org.apache.kafka: ${KAFKA_LOG_LEVEL:INFO}
+
+http:
+  port: ${SERVER_PORT:8096}
+
+vertx:
+  pools:
+    eventLoopPoolSize: ${VERTX_EVENT_LOOP_SIZE:12}
+    workersPoolSize: ${VERTX_WORKERS_POOL_SIZE:32}
+  verticle:
+    query:
+      instances: ${QUERY_VERTICLE_INSTANCES:12}
+    insert:
+      poolSize: ${INSERT_WORKER_POOL_SIZE:32}
+      insertPeriodMs: ${INSERT_PERIOD_MS:1000}
+      batchSize: ${INSERT_BATCH_SIZE:500}
+    consumer:
+      poolSize: ${KAFKA_CONSUMER_WORKER_POOL_SIZE:32}
+      maxFetchSize: ${KAFKA_CONSUMER_MAX_FETCH_SIZE:10000}
+    commit:
+      poolSize: ${KAFKA_COMMIT_WORKER_POOL_SIZE:1}
+      commitPeriodMs: ${KAFKA_COMMIT_WORKER_COMMIT_PERIOD_MS:1000}
+
+client:
+  kafka:
+    consumer:
+      checkingTimeoutMs: ${KAFKA_CHECKING_TIMEOUT_MS:10000}
+      responseTimeoutMs: ${KAFKA_RESPONSE_TIMEOUT_MS:10000}
+      consumerSize: ${KAFKA_CONSUMER_SIZE:10}
+      closeConsumersTimeout: ${KAFKA_CLOSE_CONSUMER_TIMEOUT:15000}
+      property:
+        bootstrap.servers: ${KAFKA_BOOTSTRAP_SERVERS:kafka.host:9092}
+        group.id: ${KAFKA_CONSUMER_GROUP_ID:postgres-query-execution}
+        auto.offset.reset: ${KAFKA_AUTO_OFFSET_RESET:earliest}
+        enable.auto.commit: ${KAFKA_AUTO_COMMIT:false}
+        auto.commit.interval.ms: ${KAFKA_AUTO_INTERVAL_MS:1000}
+
+datasource:
+  postgres:
+    database: ${POSTGRES_DB_NAME:db}
+    user: ${POSTGRES_USERNAME:user}
+    password: ${POSTGRES_PASS:password}
+    hosts: ${POSTGRES_HOSTS:postgres.host:5432}
+    poolSize: ${POSTGRES_POOLSIZE:10}
+    preparedStatementsCacheMaxSize: ${POSTGRES_CACHE_MAX_SIZE:256}
+    preparedStatementsCacheSqlLimit: ${POSTGRES_CACHE_SQL_LIMIT:2048}
+    preparedStatementsCache: ${POSTGRES_CACHE:true}
