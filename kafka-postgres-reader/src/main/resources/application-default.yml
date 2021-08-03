@@ -1,0 +1,33 @@
+logging:
+  level:
+    io.arenadata.kafka: ${LOG_LEVEL:DEBUG}
+    org.apache.kafka: ${KAFKA_LOG_LEVEL:INFO}
+
+http:
+  port: ${SERVER_PORT:8094}
+
+vertx:
+  pools:
+    eventLoopPoolSize: ${VERTX_EVENT_LOOP_SIZE:12}
+    workersPoolSize: ${VERTX_WORKERS_POOL_SIZE:32}
+  verticle:
+    query:
+      instances: ${QUERY_VERTICLE_INSTANCES:12}
+
+datasource:
+  postgres:
+    database: ${POSTGRES_DB_NAME:db}
+    user: ${POSTGRES_USERNAME:user}
+    password: ${POSTGRES_PASS:password}
+    hosts: ${POSTGRES_HOSTS:postgres.host:5432}
+    poolSize: ${POSTGRES_POOLSIZE:10}
+    preparedStatementsCacheMaxSize: ${POSTGRES_CACHE_MAX_SIZE:256}
+    preparedStatementsCacheSqlLimit: ${POSTGRES_CACHE_SQL_LIMIT:2048}
+    preparedStatementsCache: ${POSTGRES_CACHE:true}
+    fetchSize: ${POSTGRES_FETCH_SIZE:1000}
+
+kafka:
+  client:
+    property:
+      key.serializer: org.apache.kafka.common.serialization.ByteArraySerializer
+      value.serializer: org.apache.kafka.common.serialization.ByteArraySerializer
