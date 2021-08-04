@@ -20,6 +20,7 @@ import org.apache.avro.Conversion;
 import org.apache.avro.LogicalType;
 import org.apache.avro.Schema;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -55,12 +56,15 @@ public class LocalDateTimeConversion extends Conversion<LocalDateTime> {
 
     @Override
     public Long toLong(LocalDateTime value, Schema schema, LogicalType type) {
-        return value.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+        long nanosDelta = value.getNano() / 1000 / 1000;
+        return value.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli() * 1000 + nanosDelta;
     }
 
     @Override
     public LocalDateTime fromLong(Long value, Schema schema, LogicalType type) {
-        return LocalDateTime.ofInstant(Instant.ofEpochMilli(value), ZoneId.systemDefault());
+        long millis = value / 1000;
+        long delta = value - millis * 1000;
+        return LocalDateTime.ofInstant(Instant.ofEpochMilli(millis), ZoneId.systemDefault()).plusNanos(delta * 1000);
     }
 
     @Override

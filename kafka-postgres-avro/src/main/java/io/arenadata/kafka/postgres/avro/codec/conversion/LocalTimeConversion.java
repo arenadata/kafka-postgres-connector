@@ -49,12 +49,12 @@ public class LocalTimeConversion extends Conversion<LocalTime> {
 
     @Override
     public Long toLong(LocalTime value, Schema schema, LogicalType type) {
-        return value.toNanoOfDay();
+        return value.toNanoOfDay() / 1000L;
     }
 
     @Override
     public LocalTime fromLong(Long value, Schema schema, LogicalType type) {
-        return LocalTime.ofNanoOfDay(value);
+        return LocalTime.ofNanoOfDay(value * 1000L);
     }
 
     @Override
