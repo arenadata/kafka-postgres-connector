@@ -52,7 +52,8 @@ public class LocalDateTimeConversion extends Conversion<LocalDateTime> {
     @Override
     public Long toLong(LocalDateTime value, Schema schema, LogicalType type) {
         long millisDelta = value.getNano() / 1000 / 1000;
-        return value.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli() * 1000 + millisDelta;
+        long microsDelta = value.getNano() / 1000 - millisDelta * 1000;
+        return value.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli() * 1000 + microsDelta;
     }
 
     @Override
