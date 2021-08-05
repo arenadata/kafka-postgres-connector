@@ -44,7 +44,7 @@ public class LocalDateTimeConversionTest {
     public void testConversionBackAndForth() {
         Long micros = 356832360060020L; // 1981-04-23T05:06:00.060020
 
-        LocalDateTime dateTime = localDateTimeConversion.fromLong( micros, null, null);
+        LocalDateTime dateTime = localDateTimeConversion.fromLong(micros, null, null);
         Long microsFromDateTime = localDateTimeConversion.toLong(dateTime, null, null);
 
         assertEquals(micros, microsFromDateTime);
