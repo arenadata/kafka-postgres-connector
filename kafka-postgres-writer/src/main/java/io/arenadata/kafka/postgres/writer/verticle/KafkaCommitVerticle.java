@@ -17,7 +17,6 @@ package io.arenadata.kafka.postgres.writer.verticle;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import io.arenadata.kafka.postgres.avro.codec.AvroDecoder;
 import io.arenadata.kafka.postgres.writer.configuration.properties.VerticleProperties;
 import io.arenadata.kafka.postgres.writer.factory.InsertRequestFactory;
 import io.arenadata.kafka.postgres.writer.model.DataTopic;
@@ -29,10 +28,8 @@ import io.vertx.core.DeploymentOptions;
 import io.vertx.core.eventbus.Message;
 import io.vertx.core.json.jackson.DatabindCodec;
 import io.vertx.kafka.client.common.TopicPartition;
-import lombok.Builder;
-import lombok.Getter;
+import lombok.*;
 import lombok.extern.slf4j.Slf4j;
-import lombok.val;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedDeque;
@@ -45,7 +42,6 @@ import java.util.stream.Collectors;
 public class KafkaCommitVerticle extends ConfigurableVerticle {
     public static final String START_COMMIT = "kafka_commit_start";
     public static final String KAFKA_COMMIT_TOPIC = "kafka_consumer_offset_commit";
-    private final AvroDecoder decoder = new AvroDecoder();
     private final VerticleProperties.CommitWorkerProperties workerProperties;
     private final HashMap<TopicPartition, TopicPartitionConsumer> consumerMap;
     private final InsertRequestFactory insertRequestFactory;
