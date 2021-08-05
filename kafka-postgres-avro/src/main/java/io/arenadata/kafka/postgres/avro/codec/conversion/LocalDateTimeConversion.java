@@ -16,14 +16,10 @@
 package io.arenadata.kafka.postgres.avro.codec.conversion;
 
 import io.arenadata.kafka.postgres.avro.codec.type.LocalDateTimeLogicalType;
-import org.apache.avro.Conversion;
-import org.apache.avro.LogicalType;
-import org.apache.avro.Schema;
+import org.apache.avro.*;
 
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
+import java.time.*;
+import java.time.temporal.ChronoUnit;
 import java.util.regex.Pattern;
 
 public class LocalDateTimeConversion extends Conversion<LocalDateTime> {
@@ -55,12 +51,15 @@ public class LocalDateTimeConversion extends Conversion<LocalDateTime> {
 
     @Override
     public Long toLong(LocalDateTime value, Schema schema, LogicalType type) {
-        return value.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+        long millisDelta = value.getNano() / 1000 / 1000;
+        return value.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli() * 1000 + millisDelta;
     }
 
     @Override
-    public LocalDateTime fromLong(Long value, Schema schema, LogicalType type) {
-        return LocalDateTime.ofInstant(Instant.ofEpochMilli(value), ZoneId.systemDefault());
+    public LocalDateTime fromLong(Long valueInMicros, Schema schema, LogicalType type) {
+        long millis = valueInMicros / 1000;
+        long deltaInMicros = valueInMicros - millis * 1000;
+        return LocalDateTime.ofInstant(Instant.ofEpochMilli(millis), ZoneId.systemDefault()).plus(deltaInMicros, ChronoUnit.MICROS);
     }
 
     @Override
