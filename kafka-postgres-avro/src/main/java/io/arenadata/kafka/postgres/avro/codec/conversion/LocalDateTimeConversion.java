@@ -25,6 +25,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.temporal.*;
 import java.util.regex.Pattern;
 
 public class LocalDateTimeConversion extends Conversion<LocalDateTime> {
@@ -56,15 +57,15 @@ public class LocalDateTimeConversion extends Conversion<LocalDateTime> {
 
     @Override
     public Long toLong(LocalDateTime value, Schema schema, LogicalType type) {
-        long nanosDelta = value.getNano() / 1000 / 1000;
-        return value.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli() * 1000 + nanosDelta;
+        long millisDelta = value.getNano() / 1000 / 1000;
+        return value.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli() * 1000 + millisDelta;
     }
 
     @Override
-    public LocalDateTime fromLong(Long value, Schema schema, LogicalType type) {
-        long millis = value / 1000;
-        long delta = value - millis * 1000;
-        return LocalDateTime.ofInstant(Instant.ofEpochMilli(millis), ZoneId.systemDefault()).plusNanos(delta * 1000);
+    public LocalDateTime fromLong(Long valueInMicros, Schema schema, LogicalType type) {
+        long millis = valueInMicros / 1000;
+        long deltaInMicros = valueInMicros - millis * 1000;
+        return LocalDateTime.ofInstant(Instant.ofEpochMilli(millis), ZoneId.systemDefault()).plus(deltaInMicros, ChronoUnit.MICROS);
     }
 
     @Override
