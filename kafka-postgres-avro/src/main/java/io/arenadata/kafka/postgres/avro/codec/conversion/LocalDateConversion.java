@@ -16,9 +16,7 @@
 package io.arenadata.kafka.postgres.avro.codec.conversion;
 
 import io.arenadata.kafka.postgres.avro.codec.type.LocalDateLogicalType;
-import org.apache.avro.Conversion;
-import org.apache.avro.LogicalType;
-import org.apache.avro.Schema;
+import org.apache.avro.*;
 
 import java.time.LocalDate;
 

@@ -16,16 +16,10 @@
 package io.arenadata.kafka.postgres.avro.codec.conversion;
 
 import io.arenadata.kafka.postgres.avro.codec.type.LocalDateTimeLogicalType;
-import org.apache.avro.Conversion;
-import org.apache.avro.LogicalType;
-import org.apache.avro.Schema;
+import org.apache.avro.*;
 
-import java.math.BigDecimal;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.time.temporal.*;
+import java.time.*;
+import java.time.temporal.ChronoUnit;
 import java.util.regex.Pattern;
 
 public class LocalDateTimeConversion extends Conversion<LocalDateTime> {
