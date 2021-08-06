@@ -31,10 +31,11 @@ import static org.springframework.util.MimeTypeUtils.APPLICATION_JSON_VALUE;
 @Component
 public class VersionController {
 
+    private static final String COMPONENT_NAME = "kafka-postgres connector reader";
     private final List<VersionInfo> versionInfos;
 
     public VersionController(BuildProperties buildProperties) {
-        this.versionInfos = Collections.singletonList(new VersionInfo(buildProperties.getName(), buildProperties.getVersion()));
+        this.versionInfos = Collections.singletonList(new VersionInfo(COMPONENT_NAME, buildProperties.getVersion()));
     }
 
     public void version(RoutingContext context) {
