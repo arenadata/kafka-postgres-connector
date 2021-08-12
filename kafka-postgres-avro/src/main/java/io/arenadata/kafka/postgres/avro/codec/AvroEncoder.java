@@ -44,21 +44,4 @@ public class AvroEncoder<T> extends AvroSerdeHelper {
             throw e;
         }
     }
-
-    @SneakyThrows
-    public byte[] encode(List<T> values, Schema schema, CodecFactory codec) {
-        try (val writer = new DataFileWriter<T>(new SpecificDatumWriter<>(schema))) {
-            val baos = new ByteArrayOutputStream();
-            writer.setCodec(codec);
-            writer.create(schema, baos);
-            for (T value : values) {
-                writer.append(value);
-            }
-            writer.flush();
-            return baos.toByteArray();
-        } catch (Exception e) {
-            log.error("AVRO serialization error", e);
-            throw e;
-        }
-    }
 }
