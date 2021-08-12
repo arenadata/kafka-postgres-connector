@@ -35,7 +35,6 @@ public class QueryResultUpstream implements Upstream<QueryResultItem> {
     private final PublishService publishService;
     private final Schema schema;
     private final AvroQueryResultEncoder resultEncoder;
-    private final CodecFactory codec = CodecFactory.zstandardCodec(CodecFactory.DEFAULT_ZSTANDARD_LEVEL);
 
     public QueryResultUpstream(PublishService publishService, Schema schema, AvroQueryResultEncoder resultEncoder) {
         this.publishService = publishService;
@@ -48,7 +47,7 @@ public class QueryResultUpstream implements Upstream<QueryResultItem> {
         return Future.future(promise -> {
             val bytes = resultEncoder.encode(item.getDataSet().stream()
                     .map(row -> new AvroQueryResultRow(schema, row))
-                    .collect(Collectors.toList()), schema, codec);
+                    .collect(Collectors.toList()), schema);
             val response = new DtmQueryResponseMetadata(queryRequest.getTable(),
                     queryRequest.getStreamNumber(),
                     queryRequest.getStreamTotal(),
