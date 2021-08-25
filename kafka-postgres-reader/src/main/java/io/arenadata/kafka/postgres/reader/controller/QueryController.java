@@ -56,6 +56,7 @@ public class QueryController {
                     })
                     .onFailure(t -> {
                         log.error("Query execute FAILED", t);
+                        context.response().setStatusMessage(t.getMessage());
                         context.fail(t);
                     });
         } catch (Exception e) {
