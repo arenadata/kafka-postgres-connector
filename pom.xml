@@ -28,7 +28,7 @@
 
     <groupId>io.arenadata.dtm</groupId>
     <artifactId>kafka-postgres-connector-parent</artifactId>
-    <version>0.1.4</version>
+    <version>0.1.5</version>
     <packaging>pom</packaging>
 
     <properties>

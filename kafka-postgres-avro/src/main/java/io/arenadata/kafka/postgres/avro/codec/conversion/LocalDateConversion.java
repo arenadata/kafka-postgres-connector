@@ -16,7 +16,10 @@
 package io.arenadata.kafka.postgres.avro.codec.conversion;
 
 import io.arenadata.kafka.postgres.avro.codec.type.LocalDateLogicalType;
-import org.apache.avro.*;
+import io.arenadata.kafka.postgres.util.DateTimeUtils;
+import org.apache.avro.Conversion;
+import org.apache.avro.LogicalType;
+import org.apache.avro.Schema;
 
 import java.time.LocalDate;
 
@@ -48,22 +51,23 @@ public class LocalDateConversion extends Conversion<LocalDate> {
 
     @Override
     public LocalDate fromLong(Long value, Schema schema, LogicalType type) {
-        return LocalDate.ofEpochDay(value);
+        return DateTimeUtils.toLocalDate(value);
     }
 
     @Override
     public Long toLong(LocalDate value, Schema schema, LogicalType type) {
-        return value.toEpochDay();
+        return DateTimeUtils.toEpochDay(value);
     }
 
     @Override
     public Integer toInt(LocalDate value, Schema schema, LogicalType type) {
-        return (int) value.toEpochDay();
+        Long epochDay = DateTimeUtils.toEpochDay(value);
+        return epochDay != null ? epochDay.intValue() : null;
     }
 
     @Override
     public LocalDate fromInt(Integer value, Schema schema, LogicalType type) {
-        return LocalDate.ofEpochDay(value.longValue());
+        return DateTimeUtils.toLocalDate(value);
     }
 
     @Override

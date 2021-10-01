@@ -31,12 +31,12 @@ public class LocalDateTimeConversionTest {
     @Test
     public void microsToLocalDateTime() {
         LocalDateTime dateTime = localDateTimeConversion.fromLong(ALMOST_2ND_OF_JAN_1970, null, null);
-        assertEquals(dateTime, time.atOffset(ZoneOffset.of("Z")).atZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime());
+        assertEquals(dateTime, time.atOffset(ZoneOffset.of("Z")).atZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime());
     }
 
     @Test
     public void localDateTimeToMicros() {
-        Long micros = localDateTimeConversion.toLong(time.atOffset(ZoneOffset.of("Z")).atZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime(), null, null);
+        Long micros = localDateTimeConversion.toLong(time.atOffset(ZoneOffset.of("Z")).atZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime(), null, null);
         assertEquals(micros, ALMOST_2ND_OF_JAN_1970);
     }
 
