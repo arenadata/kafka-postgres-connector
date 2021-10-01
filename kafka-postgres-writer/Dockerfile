@@ -17,5 +17,5 @@
 FROM openjdk:8-jdk-slim
 WORKDIR app
 ADD /target/kafka-postgres-writer-*.jar kafka-postgres-writer.jar
-ENTRYPOINT ["java", "-Duser.timezone=\"UTC\"", "-jar", "kafka-postgres-writer.jar"]
+ENTRYPOINT ["java", "-jar", "kafka-postgres-writer.jar"]
 

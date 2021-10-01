@@ -16,7 +16,10 @@
 package io.arenadata.kafka.postgres.avro.codec.conversion;
 
 import io.arenadata.kafka.postgres.avro.codec.type.LocalTimeLogicalType;
-import org.apache.avro.*;
+import io.arenadata.kafka.postgres.util.DateTimeUtils;
+import org.apache.avro.Conversion;
+import org.apache.avro.LogicalType;
+import org.apache.avro.Schema;
 
 import java.time.LocalTime;
 
@@ -47,12 +50,12 @@ public class LocalTimeConversion extends Conversion<LocalTime> {
 
     @Override
     public Long toLong(LocalTime value, Schema schema, LogicalType type) {
-        return value.toNanoOfDay() / 1000;
+        return DateTimeUtils.toMicros(value);
     }
 
     @Override
     public LocalTime fromLong(Long valueInMicros, Schema schema, LogicalType type) {
-        return LocalTime.ofNanoOfDay(valueInMicros * 1000);
+        return DateTimeUtils.toLocalTime(valueInMicros);
     }
 
     @Override

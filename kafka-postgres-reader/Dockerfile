@@ -18,5 +18,5 @@ FROM openjdk:8-jdk-slim
 WORKDIR app
 ADD /target/kafka-postgres-reader-*.jar kafka-postgres-reader.jar
 EXPOSE 8080
-ENTRYPOINT ["java", "-Duser.timezone=\"UTC\"", "-jar", "kafka-postgres-reader.jar"]
+ENTRYPOINT ["java", "-jar", "kafka-postgres-reader.jar"]
 

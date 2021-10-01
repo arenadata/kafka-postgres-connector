@@ -15,6 +15,7 @@
  */
 package io.arenadata.kafka.postgres.writer.factory;
 
+import io.arenadata.kafka.postgres.writer.converter.ToSqlConverterService;
 import io.arenadata.kafka.postgres.writer.model.InsertDataContext;
 import io.arenadata.kafka.postgres.writer.model.sql.PostgresInsertSqlRequest;
 import io.vertx.sqlclient.Tuple;
@@ -32,6 +33,11 @@ import java.util.stream.IntStream;
 @Component
 public class InsertRequestFactory {
     private static final String TEMPLATE_SQL = "insert into %s.%s (%s) values (%s)";
+    private final ToSqlConverterService toSqlConverterService;
+
+    public InsertRequestFactory(ToSqlConverterService toSqlConverterService) {
+        this.toSqlConverterService = toSqlConverterService;
+    }
 
     public PostgresInsertSqlRequest create(InsertDataContext context, List<GenericRecord> rows) {
         if (!rows.isEmpty()) {
@@ -40,7 +46,7 @@ public class InsertRequestFactory {
     }
 
     private PostgresInsertSqlRequest createSqlRequest(InsertDataContext context, List<GenericRecord> rows) {
-        val fields = rows.get(0).getSchema().getFields();
+        val fields = context.getRequest().getSchema().getFields();
         val batch = getParams(rows, fields);
         return new PostgresInsertSqlRequest(context.getInsertSql(), batch);
     }
@@ -53,7 +59,13 @@ public class InsertRequestFactory {
 
     private Tuple getTupleParam(List<Schema.Field> fields, GenericRecord row) {
         val params = new ArrayList<>();
-        IntStream.range(0, fields.size()).mapToObj(row::get).forEach(params::add);
+
+        for (int i = 0; i < fields.size(); i++) {
+            Object item = row.get(i);
+            Schema.Field field = fields.get(i);
+            params.add(toSqlConverterService.convert(item, field));
+        }
+
         return new ArrayTuple(params);
     }
 
