@@ -19,7 +19,7 @@ mvn install -DskipTests=true
 
 ### Connectors configuration
 The connector configuration files `application.yml` are located in the respective folders
-`kafka-postgres-writer/src/main/resources/` and kafka-postgres-reader/src/main/resources/`.
+`kafka-postgres-writer/src/main/resources/` and `kafka-postgres-reader/src/main/resources/`.
 
 To run connectors correctly one has to adjust respective configuration files for `kafka-postgres-writer` and `kafka-postgres-reader` to match the key values with the Prostore configuration, namely:
 -    `datasource: postgres: database ~ env: name`,
