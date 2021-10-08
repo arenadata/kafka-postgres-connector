@@ -1,5 +1,5 @@
 # kafka-postgres-connector
-An obligatory supporting service to the [Prostore main service](https://github.com/arenadata/prostore) `dtm-query-execution-core` that
+A supporting service to the [Prostore main service](https://github.com/arenadata/prostore) `dtm-query-execution-core` that
 communicates with the respective DBMS.
 
 ## Useful links
@@ -38,12 +38,12 @@ sudo ln -s ~/kafka-postgres-connector/kafka-postrges-reader/src/main/resources/a
 #### Run the kafka-postgres-writer connector as a single jar
 ```shell script
 cd ~/kafka-postgres-connector/kafka-postgres-writer/target
-java -Dspring.profiles.active=default -jar kafka-postgres-writer-<version>.jar
+java -jar kafka-postgres-writer-<version>.jar
 ```
 #### Run the kafka-postgres-reader connector as a single jar
 ```shell script
 cd ~/kafka-postgres-connector/kafka-postgres-reader/target
-java -Dspring.profiles.active=default -jar kafka-postgres-reader-<version>.jar
+java -jar kafka-postgres-reader-<version>.jar
 ```
 
 ### Available endpoints
