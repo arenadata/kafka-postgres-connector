@@ -10,7 +10,7 @@ communicates with the respective DBMS.
 ### The cloning and building of kafka-postgres-connector
 ```shell script
 #clone
-git clone https://github.com/arenadata/kafka-postgres-connector
+git clone https://github.com/arenadata/kafka-postgres-connector ~/
 # build without any tests 
 cd ~/kafka-postgres-connector
 mvn clean install -DskipTests=true
