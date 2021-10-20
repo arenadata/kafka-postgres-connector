@@ -22,10 +22,10 @@ import io.arenadata.kafka.postgres.reader.model.QueryRequest;
 import io.arenadata.kafka.postgres.reader.model.QueryResultItem;
 import io.arenadata.kafka.postgres.reader.service.PublishService;
 import io.vertx.core.Future;
+import io.vertx.kafka.client.producer.KafkaProducer;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.apache.avro.Schema;
-import org.apache.avro.file.CodecFactory;
 
 import java.util.stream.Collectors;
 
@@ -35,11 +35,16 @@ public class QueryResultUpstream implements Upstream<QueryResultItem> {
     private final PublishService publishService;
     private final Schema schema;
     private final AvroQueryResultEncoder resultEncoder;
+    private final KafkaProducer<byte[], byte[]> kafkaProducer;
 
-    public QueryResultUpstream(PublishService publishService, Schema schema, AvroQueryResultEncoder resultEncoder) {
+    public QueryResultUpstream(PublishService publishService,
+                               Schema schema,
+                               AvroQueryResultEncoder resultEncoder,
+                               KafkaProducer<byte[], byte[]> kafkaProducer) {
         this.publishService = publishService;
         this.schema = schema;
         this.resultEncoder = resultEncoder;
+        this.kafkaProducer = kafkaProducer;
     }
 
     @Override
@@ -53,8 +58,13 @@ public class QueryResultUpstream implements Upstream<QueryResultItem> {
                     queryRequest.getStreamTotal(),
                     item.getChunkNumber(),
                     item.getIsLastChunk());
-            publishService.publishQueryResult(queryRequest.getKafkaBrokers(), queryRequest.getKafkaTopic(), response, bytes)
+            publishService.publishQueryResult(kafkaProducer, queryRequest.getKafkaTopic(), response, bytes)
                     .onComplete(promise);
         });
+    }
+
+    @Override
+    public void close() {
+        kafkaProducer.close();
     }
 }

@@ -57,12 +57,18 @@ public class PostgresQueryExecutorService {
     private Future<Void> executeQuery(PostgresExecutor executor,
                                       QueryRequest query) {
         return Future.future(p -> {
-            val upstream = upstreamFactory.create(query.getAvroSchema());
+            val upstream = upstreamFactory.create(query.getAvroSchema(), query.getKafkaBrokers());
             val messageFutures = new CopyOnWriteArrayList<Future>();
             executor.execute(query, chunk -> messageFutures.add(pushMessage(query, upstream, chunk)))
                     .compose(v -> CompositeFuture.join(messageFutures))
-                    .onSuccess(event -> p.complete())
-                    .onFailure(p::fail);
+                    .onComplete(ar -> {
+                        upstream.close();
+                        if (ar.succeeded()) {
+                            p.complete();
+                        } else {
+                            p.fail(ar.cause());
+                        }
+                    });
         });
     }
 
