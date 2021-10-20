@@ -20,4 +20,6 @@ import io.vertx.core.Future;
 
 public interface Upstream<Item> {
     Future<Void> push(QueryRequest queryRequest, Item item);
+
+    void close();
 }

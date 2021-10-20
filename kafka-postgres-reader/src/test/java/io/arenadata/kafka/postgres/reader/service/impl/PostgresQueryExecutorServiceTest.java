@@ -56,7 +56,7 @@ class PostgresQueryExecutorServiceTest {
     @BeforeEach
     void setUp() {
         queryExecutorService = new PostgresQueryExecutorService(Arrays.asList(databaseExecutors1, databaseExecutors2), upstreamFactory);
-        when(upstreamFactory.create(Mockito.any())).thenReturn(upstream);
+        when(upstreamFactory.create(any(), any())).thenReturn(upstream);
     }
 
     @Test

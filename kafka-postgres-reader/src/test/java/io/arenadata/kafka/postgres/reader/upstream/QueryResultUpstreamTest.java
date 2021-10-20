@@ -69,7 +69,7 @@ class QueryResultUpstreamTest {
         QueryResultItem resultItem = new QueryResultItem(Collections.emptyList(), CHUNK_NUMBER, IS_LAST_CHUNK);
 
         when(resultEncoder.encode(anyList(), same(schema))).thenReturn(new byte[0]);
-        when(publishService.publishQueryResult(anyList(), eq(TOPIC), dtmQueryResponseMetadataArgumentCaptor.capture(), any()))
+        when(publishService.publishQueryResult(any(), eq(TOPIC), dtmQueryResponseMetadataArgumentCaptor.capture(), any()))
                 .thenReturn(Future.succeededFuture());
 
         // act
@@ -134,7 +134,7 @@ class QueryResultUpstreamTest {
         QueryResultItem resultItem = new QueryResultItem(Collections.emptyList(), 0, true);
 
         when(resultEncoder.encode(anyList(), same(schema))).thenReturn(new byte[0]);
-        when(publishService.publishQueryResult(anyList(), eq(TOPIC), any(), any()))
+        when(publishService.publishQueryResult(any(), eq(TOPIC), any(), any()))
                 .thenReturn(Future.failedFuture(new RuntimeException("Exception")));
 
         // act

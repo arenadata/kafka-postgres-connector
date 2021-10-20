@@ -16,22 +16,37 @@
 package io.arenadata.kafka.postgres.reader.factory;
 
 import io.arenadata.kafka.postgres.avro.codec.AvroQueryResultEncoder;
+import io.arenadata.kafka.postgres.reader.model.KafkaBrokerInfo;
 import io.arenadata.kafka.postgres.reader.model.QueryResultItem;
+import io.arenadata.kafka.postgres.reader.service.KafkaProducerProvider;
 import io.arenadata.kafka.postgres.reader.service.PublishService;
 import io.arenadata.kafka.postgres.reader.upstream.QueryResultUpstream;
 import io.arenadata.kafka.postgres.reader.upstream.Upstream;
+import lombok.val;
 import org.apache.avro.Schema;
+import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Service
 public class QueryResultUpstreamFactory implements AutoCloseable {
 
     private final PublishService publishService;
+    private final KafkaProducerProvider kafkaProducerProvider;
 
-    public QueryResultUpstreamFactory(PublishService publishService) {
+    public QueryResultUpstreamFactory(PublishService publishService,
+                                      KafkaProducerProvider kafkaProducerProvider) {
         this.publishService = publishService;
+        this.kafkaProducerProvider = kafkaProducerProvider;
     }
 
-    public Upstream<QueryResultItem> create(Schema avroSchema) {
-        return new QueryResultUpstream(publishService, avroSchema, new AvroQueryResultEncoder());
+    public Upstream<QueryResultItem> create(Schema avroSchema, List<KafkaBrokerInfo> kafkaBrokers) {
+        val kafkaBrokersListStr = kafkaBrokers.stream().map(KafkaBrokerInfo::getAddress)
+                .collect(Collectors.joining(","));
+        val kafkaProducer = kafkaProducerProvider.create(kafkaBrokersListStr);
+
+        return new QueryResultUpstream(publishService, avroSchema, new AvroQueryResultEncoder(), kafkaProducer);
     }
 
     @Override
