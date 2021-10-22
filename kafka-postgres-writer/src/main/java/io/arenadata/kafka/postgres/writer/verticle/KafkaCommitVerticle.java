@@ -28,8 +28,10 @@ import io.vertx.core.DeploymentOptions;
 import io.vertx.core.eventbus.Message;
 import io.vertx.core.json.jackson.DatabindCodec;
 import io.vertx.kafka.client.common.TopicPartition;
-import lombok.*;
+import lombok.Builder;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedDeque;
@@ -49,7 +51,8 @@ public class KafkaCommitVerticle extends ConfigurableVerticle {
     private final Queue<PartitionOffset> offsetsQueue = new ConcurrentLinkedDeque<>();
     private final KafkaConsumerService consumerService;
     private final InsertDataContext context;
-    private long timerId = -1;
+    private volatile long timerId;
+    private volatile boolean stopped;
 
     @Override
     public void start() {
@@ -58,6 +61,10 @@ public class KafkaCommitVerticle extends ConfigurableVerticle {
     }
 
     private void collectKafkaMessages(Message<Object> partitionOffsets) {
+        if (stopped) {
+            return;
+        }
+
         try {
             List<PartitionOffset> offsets = DatabindCodec.mapper()
                     .readValue(partitionOffsets.body().toString(), new TypeReference<List<PartitionOffset>>() {
@@ -70,8 +77,11 @@ public class KafkaCommitVerticle extends ConfigurableVerticle {
     }
 
     private void init() {
-        vertx.setPeriodic(1000, timer -> {
-            timerId = timer;
+        if (stopped) {
+            return;
+        }
+
+        timerId = vertx.setPeriodic(1000, timer -> {
             List<PartitionOffset> byCommit = new ArrayList<>();
             while (!offsetsQueue.isEmpty()) {
                 PartitionOffset offset = offsetsQueue.poll();
@@ -88,9 +98,8 @@ public class KafkaCommitVerticle extends ConfigurableVerticle {
 
     @Override
     public void stop() {
-        if (timerId != -1) {
-            vertx.cancelTimer(timerId);
-        }
+        stopped = true;
+        vertx.cancelTimer(timerId);
     }
 
     private List<PartitionOffset> commitKafkaMessages(List<PartitionOffset> partitionOffsets) {

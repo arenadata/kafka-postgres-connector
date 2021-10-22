@@ -45,7 +45,8 @@ public class InsertVerticle extends ConfigurableVerticle {
     private final PostgresExecutor executor;
     private final InsertDataContext context;
     private final Queue<InsertChunk> insertChunkQueue;
-    private long timerId = -1L;
+    private volatile boolean stopped;
+    private volatile long timerId;
 
     @Override
     public void start() {
@@ -54,8 +55,11 @@ public class InsertVerticle extends ConfigurableVerticle {
     }
 
     private void runProcessInserts() {
-        vertx.setTimer(properties.getInsertPeriodMs(), timer -> {
-            timerId = timer;
+        if (stopped) {
+            return;
+        }
+
+        timerId = vertx.setTimer(properties.getInsertPeriodMs(), timer -> {
             log.debug("Batch queue size [{}]", insertChunkQueue.size());
             InsertChunk insertChunk = insertChunkQueue.poll();
             if (insertChunk != null) {
@@ -100,9 +104,8 @@ public class InsertVerticle extends ConfigurableVerticle {
 
     @Override
     public void stop() {
-        if (timerId != -1) {
-            vertx.cancelTimer(timerId);
-        }
+        stopped = true;
+        vertx.cancelTimer(timerId);
     }
 
     private void error(InsertDataContext context, Throwable throwable) {

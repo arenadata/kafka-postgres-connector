@@ -57,7 +57,8 @@ public class KafkaConsumerVerticle extends ConfigurableVerticle {
     private final Map<Long, InsertChunk> insertChunks = new HashMap<>();
     private final AtomicLong lastOffset = new AtomicLong(-1);
     private final HashMap<TopicPartition, TopicPartitionConsumer> consumerMap;
-    private TopicPartitionConsumer topicPartitionConsumer;
+    private volatile TopicPartitionConsumer topicPartitionConsumer;
+    private volatile boolean stopped;
     private Future<Object> processFuture;
 
     @Override
@@ -69,6 +70,11 @@ public class KafkaConsumerVerticle extends ConfigurableVerticle {
         processFuture = Future.succeededFuture();
         consumerService.createTopicPartitionConsumer(context, partitionInfo)
                 .onSuccess(consumer -> {
+                    if (stopped) {
+                        consumer.getKafkaConsumer().close();
+                        return;
+                    }
+
                     setConsumer(consumer);
                     lastOffset.set(topicPartitionConsumer.getLastOffset());
                     consumer.getKafkaConsumer().handler(record ->
@@ -104,6 +110,7 @@ public class KafkaConsumerVerticle extends ConfigurableVerticle {
 
     @Override
     public void stop() {
+        stopped = true;
         if (topicPartitionConsumer != null) {
             topicPartitionConsumer.getKafkaConsumer().handler(null);
             topicPartitionConsumer.getKafkaConsumer().close();
