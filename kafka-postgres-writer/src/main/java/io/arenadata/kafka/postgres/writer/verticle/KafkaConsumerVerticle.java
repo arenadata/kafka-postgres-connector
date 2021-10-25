@@ -77,11 +77,13 @@ public class KafkaConsumerVerticle extends ConfigurableVerticle {
 
                     setConsumer(consumer);
                     lastOffset.set(topicPartitionConsumer.getLastOffset());
-                    consumer.getKafkaConsumer().handler(record ->
-                            processFuture = processFuture
-                                    .compose(v -> parseChunk(record))
-                                    .compose(chunk -> insertChunk(context, chunk))
-                                    .onFailure(error -> error(context, error)));
+                    consumer.getKafkaConsumer().handler(record -> {
+                        log.error("EXPECTED MESSAGE READ");
+                        processFuture = processFuture
+                                .compose(v -> parseChunk(record))
+                                .compose(chunk -> insertChunk(context, chunk))
+                                .onFailure(error -> error(context, error));
+                    });
                 });
     }
 

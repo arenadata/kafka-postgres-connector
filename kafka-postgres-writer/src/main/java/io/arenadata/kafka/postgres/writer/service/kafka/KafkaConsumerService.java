@@ -84,6 +84,7 @@ public class KafkaConsumerService {
     private Future<TopicPartitionConsumer> createTopicPartitionConsumer(Map<String, String> consumerProperty,
                                                                         PartitionInfo partitionInfo) {
         val consumer = consumerFactory.create(consumerProperty);
+        consumer.handler(event -> log.error("UNEXPECTED MEESSAGE READE"));
         consumer.exceptionHandler(it -> log.error("Error reading message from TopicPartition {}", partitionInfo, it));
         val topicPartition = new TopicPartition(partitionInfo.getTopic(), partitionInfo.getPartition());
         return assign(consumer, topicPartition)
